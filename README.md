@@ -1,1 +1,3 @@
 # zig practice
+
+//clear
