@@ -52,9 +52,17 @@ pub fn main() !void {
   var x: i32 = undefined;
   x = 1;
   try stdout.print("{d}\n", .{x});
+  
 }
 fn foo() !void {
   const y = 5726;
   // 상수는 변환 불가능
+  y += 1;
+}
+test "expect addOne adds one to 5726" {
+  try std.testing.expect(addOne(5726) == 5727);
+}
+fn addOne() void {
+  var y = 5726;
   y += 1;
 }
