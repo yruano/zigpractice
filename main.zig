@@ -52,7 +52,14 @@ pub fn main() !void {
   var x: i32 = undefined;
   x = 1;
   try stdout.print("{d}\n", .{x});
+
+  const f00_x = 0.001;
+
+  try stdout.print("foo_strict : {d}\n", .{foo_strict(f00_x)});
+  try stdout.print("foo_optimized : {d}\n", .{foo_optimized(f00_x)});
   
+  try stdout.print("foo_Strict : {d}\n", .{foo_Strict(f00_x)});
+  try stdout.print("foo_Optimized : {d}\n", .{foo_Optimized(f00_x)});
 }
 fn foo() !void {
   const y = 5726;
@@ -66,3 +73,16 @@ fn addOne() void {
   var y = 5726;
   y += 1;
 }
+
+const big = @as(f64, 1 << 40);
+export fn foo_strict(x: f64) f64 {
+  return x + big - big;
+}
+
+export fn foo_optimized(x: f64) f64 {
+  @setFloatMode(.Optimized);
+  return x + big - big;
+}
+
+extern fn foo_Strict(x: f64) f64;
+extern fn foo_Optimized(x: f64) f64;
