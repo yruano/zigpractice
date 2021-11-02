@@ -2,6 +2,7 @@ const std = @import("std");
 const os = std.os;
 const assert = std.assert;
 const mem = std.mem;
+const expect = std.testing.expect;
 
 pub fn main() !void {
   const stdout = std.io.getStdOut().writer();
@@ -86,3 +87,48 @@ export fn foo_optimized(x: f64) f64 {
 
 extern fn foo_Strict(x: f64) f64;
 extern fn foo_Optimized(x: f64) f64;
+
+test "anonymous list literal syntax" {
+  var array: [4]u8 = .{11, 22, 33, 44};
+  try expect(array[0] == 11);
+  try expect(array[1] == 22);
+  try expect(array[2] == 33);
+  try expect(array[3] == 44);
+}
+
+test "fully anonymous list literal" {
+  try dump(.{ @as(u32, 1234), @as(f64, 12.34), true, "hi"});
+}
+fn dump(args: anytype) !void {
+  try expect(args.@"0" == 1234);
+  try expect(args.@"1" == 12.34);
+  try expect(args.@"2");
+  try expect(args.@"3"[0] == 'h');
+  try expect(args.@"3"[1] == 'i');
+}
+
+const mat4x4 = [4][4]f32 {
+  [_]f32{1.0, 0.0, 0.0, 0.0},
+  [_]f32{0.0, 1.0, 0.0, 1.0},
+  [_]f32{0.0, 0.0, 1.0, 0.0},
+  [_]f32{0.0, 0.0, 0.0, 1.0},
+};
+test "multidimensional arrays" {
+  try expect(mat4x4[1][1] == 1.0);
+
+  for (mat4x4) |row, row_index| {
+    for (row) |cell, column_index|{
+      if (row_index == column_index) {
+        try expect(cell == 1.0);
+      }
+    }
+  }
+}
+
+test "null terminated array" {
+  const array = [_:0]u8{1, 2, 3, 4};
+
+  try expect(@TypeOf(array) == [4:0]u8);
+  try expect(array.len == 4);
+  try expect(array[4] == 0);
+}

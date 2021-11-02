@@ -2,3 +2,4 @@
 
 //clear
 //flitto
+//zig test ***.zig
