@@ -57,6 +57,62 @@ pub fn main() !void {
     };
   try stdout.print("result == 12 : {d}\n", .{result == 12});
 
+  //"nested break"
+  var conut1: usize = 0;
+  outer1: for([_]i32{ 1, 2, 3, 4, 5 }) |_| {
+    for([_]i32{ 1, 2, 3, 4, 5 }) |_| {
+      conut1 += 1;
+      try stdout.print("conut1 : {d}\n", .{conut1});
+      if (conut1 == 5){
+        break :outer1;
+      }
+    }
+  }
+  try stdout.print("conut1 : {d}\n", .{conut1});
+  try stdout.print("conut1 == 1 : {d}\n", .{conut1 == 1});
+
+  //"nested continue"
+  var conut2: usize = 0;
+  outer2: for([_]i32{ 1, 2, 3, 4, 5, 6, 7, 8 }) |_| {
+    for([_]i32{ 1, 2, 3, 4, 5 }) |_| {
+      conut2 += 1;
+      continue :outer2;
+    }
+  }
+  try stdout.print("conut2 == 1\n", .{conut2 == 1});
+
+  //"nested continue"
+  var conut2: usize = 0;
+  outer2: for([_]i32{ 1, 2, 3, 4, 5, 6, 7, 8 }) |_| {
+    for([_]i32{ 1, 2, 3, 4, 5 }) |_| {
+      conut2 += 1;
+      try stdout.print("conut2 : {d}\n", .{conut2});
+      continue :outer2;
+    }
+    
+  }
+  try stdout.print("conut2 == 8 : {d}\n", .{conut2 == 8});
+
+  const nums = [_]i32{ 2, 4, 6};
+  var sum: usize = 0;
+  inline for (nums) |i| {
+    const T = switch (i) {
+      2 => f32,
+      4 => i8,
+      6 => bool,
+      else => unreachable,
+    };
+    try stdout.print("sum : {d}\n", .{sum});
+    try stdout.print("@typeName(T).len : {d}\n", .{@typeName(T).len});
+    sum += typeNameLength(T);
+    try stdout.print("T : {d}\n", .{T});
+  }
+  try stdout.print("sum == 9 : {d}\n", .{sum == 9});
+
   const stdin = std.io.getStdIn().reader();
   _ = try stdin.readByte();
+}
+
+fn typeNameLength(comptime T: type) usize {
+  return @typeName(T).len;
 }
